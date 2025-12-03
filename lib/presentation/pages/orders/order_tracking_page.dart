@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
-import 'package:university_delivery_app/core/constants/app_constants.dart';
 import 'package:university_delivery_app/presentation/bloc/cart/cart_bloc.dart';
 import 'package:university_delivery_app/presentation/bloc/cart/cart_event.dart';
-import 'package:university_delivery_app/presentation/bloc/cart/cart_state.dart';
 import 'package:university_delivery_app/presentation/bloc/orders/orders_bloc.dart';
 import 'package:university_delivery_app/presentation/bloc/orders/orders_event.dart';
 import 'package:university_delivery_app/presentation/bloc/orders/orders_state.dart';
@@ -21,8 +19,6 @@ class OrderTrackingPage extends StatefulWidget {
 
 class _OrderTrackingPageState extends State<OrderTrackingPage> {
   final _addressController = TextEditingController();
-  String? _selectedRestaurantId;
-  String? _selectedRestaurantName;
 
   @override
   void dispose() {

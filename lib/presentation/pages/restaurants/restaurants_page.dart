@@ -119,7 +119,7 @@ class RestaurantsPage extends StatelessWidget {
                                 const SizedBox(height: 8),
                                 Row(
                                   children: [
-                                    Icon(
+                                    const Icon(
                                       Icons.star,
                                       size: 16,
                                       color: Colors.amber,

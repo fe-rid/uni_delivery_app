@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:university_delivery_app/domain/entities/cart_item_entity.dart';
 import 'package:university_delivery_app/domain/entities/menu_item_entity.dart';
 import 'package:university_delivery_app/domain/entities/order_entity.dart';
-import 'package:university_delivery_app/data/models/menu_item_model.dart';
 
 class OrderModel extends OrderEntity {
   const OrderModel({

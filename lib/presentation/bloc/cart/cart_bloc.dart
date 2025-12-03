@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:university_delivery_app/domain/entities/cart_item_entity.dart';
-import 'package:university_delivery_app/domain/entities/menu_item_entity.dart';
 import 'package:university_delivery_app/presentation/bloc/cart/cart_event.dart';
 import 'package:university_delivery_app/presentation/bloc/cart/cart_state.dart';
 

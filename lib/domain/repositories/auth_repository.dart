@@ -21,5 +21,11 @@ abstract class AuthRepository {
 
   /// Check if user is authenticated
   Stream<UserEntity?> authStateChanges();
+
+  /// Login with Google
+  Future<UserEntity> loginWithGoogle();
+
+  /// Login with Apple
+  Future<UserEntity> loginWithApple();
 }
 

@@ -1,4 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:university_delivery_app/services/firebase_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:university_delivery_app/app.dart';
@@ -14,14 +16,39 @@ import 'package:university_delivery_app/presentation/bloc/menu/menu_bloc.dart';
 import 'package:university_delivery_app/presentation/bloc/orders/orders_bloc.dart';
 import 'package:university_delivery_app/presentation/bloc/restaurants/restaurants_bloc.dart';
 import 'package:university_delivery_app/presentation/bloc/restaurants/restaurants_event.dart';
-import 'package:university_delivery_app/services/firebase_service.dart';
 
 void main() async {
+  // Ensure Flutter binding is initialized before any async operations
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize Firebase
-  await FirebaseService.initialize();
-  
+  bool firebaseInitialized = false;
+  try {
+    await Firebase.initializeApp();
+    firebaseInitialized = true;
+    if (kDebugMode) {
+      debugPrint('Firebase initialized successfully');
+    }
+    // Initialize additional Firebase services
+    await FirebaseService.initialize();
+  } catch (e) {
+    firebaseInitialized = false;
+    if (kDebugMode) {
+      debugPrint('Firebase initialization error: $e');
+      debugPrint('Make sure google-services.json is in android/app/');
+      debugPrint('App will continue but Firebase features will not work.');
+    }
+    // Don't crash the app - allow it to run in demo mode
+  }
+
+  if (kDebugMode) {
+    if (firebaseInitialized) {
+      debugPrint('Firebase is ready - All features available');
+    } else {
+      debugPrint('Running in demo mode - Firebase features disabled');
+    }
+  }
+
   runApp(const MyApp());
 }
 
@@ -35,7 +62,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => AuthBloc(
             authRepository: AuthRepositoryImpl(),
-          )..add(CheckAuthStatusEvent()),
+          )..add(const CheckAuthStatusEvent()),
         ),
         BlocProvider(
           create: (context) => CartBloc(),
@@ -43,7 +70,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => RestaurantsBloc(
             restaurantRepository: RestaurantRepositoryImpl(),
-          )..add(LoadRestaurantsEvent()),
+          )..add(const LoadRestaurantsEvent()),
         ),
         BlocProvider(
           create: (context) => MenuBloc(
@@ -65,4 +92,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

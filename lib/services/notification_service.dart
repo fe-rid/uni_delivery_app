@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 /// Service for handling push notifications
@@ -56,13 +57,15 @@ class NotificationService {
       sound: true,
     );
 
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print('User granted notification permission');
-    } else if (settings.authorizationStatus ==
-        AuthorizationStatus.provisional) {
-      print('User granted provisional notification permission');
-    } else {
-      print('User declined notification permission');
+    if (kDebugMode) {
+      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+        debugPrint('User granted notification permission');
+      } else if (settings.authorizationStatus ==
+          AuthorizationStatus.provisional) {
+        debugPrint('User granted provisional notification permission');
+      } else {
+        debugPrint('User declined notification permission');
+      }
     }
   }
 
@@ -77,7 +80,9 @@ class NotificationService {
 
   /// Handle background messages (when app is opened from notification)
   void _handleBackgroundMessage(RemoteMessage message) {
-    print('Notification opened app: ${message.messageId}');
+    if (kDebugMode) {
+      debugPrint('Notification opened app: ${message.messageId}');
+    }
     // Handle navigation or other actions here
   }
 
@@ -113,7 +118,9 @@ class NotificationService {
 
   /// Handle notification tap
   void _onNotificationTapped(NotificationResponse response) {
-    print('Notification tapped: ${response.payload}');
+    if (kDebugMode) {
+      debugPrint('Notification tapped: ${response.payload}');
+    }
     // Handle navigation based on notification data
   }
 
@@ -136,6 +143,7 @@ class NotificationService {
 /// Top-level function for background message handling
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print('Handling background message: ${message.messageId}');
+  // Background message handler
+  // Note: This runs in a separate isolate, logging is handled by Firebase
 }
 

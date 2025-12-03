@@ -19,7 +19,6 @@ class AppTheme {
         primary: primaryColor,
         secondary: secondaryColor,
         error: errorColor,
-        background: backgroundColor,
         surface: surfaceColor,
       ),
       textTheme: GoogleFonts.poppinsTextTheme(),
@@ -69,7 +68,7 @@ class AppTheme {
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),

@@ -47,8 +47,19 @@ class _LoginPageState extends State<LoginPage> {
           listener: (context, state) {
             if (state is AuthError) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message)),
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Colors.red,
+                  duration: const Duration(seconds: 4),
+                  action: SnackBarAction(
+                    label: 'OK',
+                    textColor: Colors.white,
+                    onPressed: () {},
+                  ),
+                ),
               );
+            } else if (state is AuthAuthenticated) {
+              // Login successful - navigation handled by app.dart
             }
           },
           child: SingleChildScrollView(
@@ -113,6 +124,104 @@ class _LoginPageState extends State<LoginPage> {
                         text: 'Login',
                         onPressed: _handleLogin,
                         isLoading: state is AuthLoading,
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(child: Divider(color: Colors.grey[400])),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          'OR',
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                      ),
+                      Expanded(child: Divider(color: Colors.grey[400])),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  // Google Sign In Button
+                  BlocBuilder<AuthBloc, AuthState>(
+                    builder: (context, state) {
+                      final isLoading = state is AuthLoading;
+                      return SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: isLoading
+                              ? null
+                              : () {
+                                  context.read<AuthBloc>().add(
+                                        const LoginWithGoogleEvent(),
+                                      );
+                                },
+                          icon: isLoading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Text(
+                                  'G',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                          label: const Text('Continue with Google'),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            side: BorderSide(color: Colors.grey[300]!),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  // Apple Sign In Button
+                  BlocBuilder<AuthBloc, AuthState>(
+                    builder: (context, state) {
+                      final isLoading = state is AuthLoading;
+                      return SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: isLoading
+                              ? null
+                              : () {
+                                  context.read<AuthBloc>().add(
+                                        const LoginWithAppleEvent(),
+                                      );
+                                },
+                          icon: isLoading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
+                                  ),
+                                )
+                              : const Icon(Icons.apple, size: 20),
+                          label: const Text('Continue with Apple'),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            side: const BorderSide(color: Colors.black),
+                            backgroundColor: Colors.black,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
                       );
                     },
                   ),

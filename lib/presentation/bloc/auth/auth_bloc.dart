@@ -11,15 +11,29 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LoginEvent>(_onLogin);
     on<RegisterEvent>(_onRegister);
     on<LogoutEvent>(_onLogout);
+    on<LoginWithGoogleEvent>(_onLoginWithGoogle);
+    on<LoginWithAppleEvent>(_onLoginWithApple);
 
-    // Listen to auth state changes
-    authRepository.authStateChanges().listen((user) {
-      if (user != null) {
-        add(CheckAuthStatusEvent());
-      } else {
-        emit(const AuthUnauthenticated());
-      }
-    });
+    // Listen to auth state changes (only if Firebase is initialized)
+    try {
+      authRepository.authStateChanges().listen(
+        (user) {
+          if (user != null) {
+            add(const CheckAuthStatusEvent());
+          } else {
+            add(const LogoutEvent());
+          }
+        },
+        onError: (error) {
+          // Firebase not initialized - emit unauthenticated state
+          add(const LogoutEvent());
+        },
+        cancelOnError: false,
+      );
+    } catch (e) {
+      // Firebase not available - start in unauthenticated state
+      // Don't add event here, let CheckAuthStatusEvent handle it
+    }
   }
 
   Future<void> _onCheckAuthStatus(
@@ -34,7 +48,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(const AuthUnauthenticated());
       }
     } catch (e) {
-      emit(AuthError(e.toString()));
+      // If Firebase is not initialized, just show login page
+      if (e.toString().contains('no-app') || e.toString().contains('Firebase')) {
+        emit(const AuthUnauthenticated());
+      } else {
+        emit(AuthError(e.toString()));
+      }
     }
   }
 
@@ -44,10 +63,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(const AuthLoading());
     try {
-      final user = await authRepository.login(event.email, event.password);
+      final user = await authRepository.login(event.email, event.password)
+          .timeout(
+            const Duration(seconds: 45),
+            onTimeout: () {
+              throw Exception('Login timeout. Please check your internet connection and try again.');
+            },
+          );
       emit(AuthAuthenticated(user: user, userRole: user.role));
     } catch (e) {
-      emit(AuthError(e.toString()));
+      // Extract clean error message
+      String errorMessage = e.toString();
+      if (errorMessage.startsWith('Exception: ')) {
+        errorMessage = errorMessage.substring(11);
+      } else if (errorMessage.startsWith('Exception:')) {
+        errorMessage = errorMessage.substring(10).trim();
+      }
+      emit(AuthError(errorMessage));
     }
   }
 
@@ -78,6 +110,32 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       await authRepository.logout();
       emit(const AuthUnauthenticated());
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
+  }
+
+  Future<void> _onLoginWithGoogle(
+    LoginWithGoogleEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthLoading());
+    try {
+      final user = await authRepository.loginWithGoogle();
+      emit(AuthAuthenticated(user: user, userRole: user.role));
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
+  }
+
+  Future<void> _onLoginWithApple(
+    LoginWithAppleEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthLoading());
+    try {
+      final user = await authRepository.loginWithApple();
+      emit(AuthAuthenticated(user: user, userRole: user.role));
     } catch (e) {
       emit(AuthError(e.toString()));
     }

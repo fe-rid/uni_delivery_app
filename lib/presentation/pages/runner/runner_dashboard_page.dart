@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:university_delivery_app/core/constants/app_constants.dart';
 import 'package:university_delivery_app/data/models/order_model.dart';
-import 'package:university_delivery_app/data/repositories/order_repository_impl.dart';
-import 'package:university_delivery_app/presentation/bloc/orders/orders_bloc.dart';
-import 'package:university_delivery_app/presentation/bloc/orders/orders_event.dart';
-import 'package:university_delivery_app/presentation/bloc/orders/orders_state.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class RunnerDashboardPage extends StatelessWidget {
@@ -134,6 +129,7 @@ class RunnerDashboardPage extends StatelessWidget {
   Future<void> _acceptOrder(BuildContext context, String orderId) async {
     final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
     if (userId.isEmpty) {
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('User not authenticated')),
       );
@@ -159,6 +155,7 @@ class RunnerDashboardPage extends StatelessWidget {
         'updatedAt': FieldValue.serverTimestamp(),
       });
 
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Order accepted successfully!'),
@@ -166,6 +163,7 @@ class RunnerDashboardPage extends StatelessWidget {
         ),
       );
     } catch (e) {
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error: $e'),

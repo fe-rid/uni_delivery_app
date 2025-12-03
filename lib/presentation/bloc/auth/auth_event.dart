@@ -47,3 +47,11 @@ class LogoutEvent extends AuthEvent {
   const LogoutEvent();
 }
 
+class LoginWithGoogleEvent extends AuthEvent {
+  const LoginWithGoogleEvent();
+}
+
+class LoginWithAppleEvent extends AuthEvent {
+  const LoginWithAppleEvent();
+}
+
